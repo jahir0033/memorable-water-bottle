@@ -1,0 +1,8 @@
+.bottle{
+    border: 3px solid hotpink;
+    padding: 15px;
+    border-radius: 30px;
+}
+.bottle img{
+    width: 250px;
+}
