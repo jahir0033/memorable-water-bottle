@@ -4,6 +4,8 @@ import { useEffect } from "react";
 import { useState } from "react";
 import Bottle from "../Bottle/Bottle";
 import './Bottles.css';
+import { addToLS, getStoredCard } from "../../utilities/localstorage";
+import Cart from "../Cart/Cart";
 
 
 const Bottles = () => {
@@ -16,16 +18,45 @@ const Bottles = () => {
         .then(data => setBottles(data))
     },[])
 
+    
+    // lode cart from local storage
+    useEffect(()=> {
+        // console.log('call the use effect', bottles.length)
+        if(bottles.length){
+            const storedCart = getStoredCard();
+        // console.log(storedCart,bottles);
+            const saveCart = [];
+            for(const id of storedCart){
+                // console.log(id)
+                const bottle = bottles.find(bottle => bottle.id === id);
+                if(bottle){
+                    saveCart.push(bottle)
+                }
+            }
+            // console.log('save cart', saveCart);
+            setCart(saveCart);
+        }
+    },[bottles])
+
+
     const handleAddToCart = bottle =>{
         const newCart = [...cart, bottle];
         setCart(newCart);
+        addToLS(bottle.id);
     }
 
+    const handleRemoveFromCart = id =>{
+        // visual cart remove
+        const remainingCart = cart.filter(bottle => bottle.id !== id)
+        serCart(remainingCart);
+
+        // remove from LS
+        removeFromLS(id);
+    }
     return (
         <div>
             <h2>Bottle Available:{bottles.length}</h2>
-            <h4>Cart:{cart.length}</h4>
-
+           <Cart cart={cart} handleRemoveFromCart={handleRemoveFromCart} ></Cart>
             <div className="bottles-container">
             {
                bottles.map(bottle => <Bottle key={bottle.id}
